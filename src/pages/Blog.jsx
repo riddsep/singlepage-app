@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 const Blog = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const articlesList = articles.map((article) => (
-    <li key={article.id}>{article.quote}</li>
-  ));
 
   useEffect(() => {
     async function getArticles() {
-      const request = await fetch("https://dummyjson.com/quotes");
+      const request = await fetch(
+        "https://api.spaceflightnewsapi.net/v4/articles/"
+      );
       const response = await request.json();
-      setArticles(response.quotes);
+      setArticles(response.results);
       setLoading(false);
     }
     getArticles();
@@ -19,7 +19,18 @@ const Blog = () => {
   return (
     <section>
       <h1>Blog</h1>
-      <ul>{loading ? <p>sedang memuat ...</p> : articlesList}</ul>
+      <ul>
+        {loading ? (
+          <p>sedang memuat ...</p>
+        ) : (
+          articles.map((article) => (
+            <article key={article.id}>
+              <h2>{<Link to={`/blog/${article.id}`}>{article.title}</Link>}</h2>
+              <p>{new Date(article.published_at).toLocaleDateString()}</p>
+            </article>
+          ))
+        )}
+      </ul>
     </section>
   );
 };
